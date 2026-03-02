@@ -43,31 +43,31 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <AppBar position="static">
           <Toolbar>
             <VideoIcon sx={{ mr: 2 }} />
-            <Typography 
-              variant="h6" 
-              component="div" 
+            <Typography
+              variant="h6"
+              component="div"
               sx={{ flexGrow: 1, cursor: 'pointer' }}
               onClick={() => navigate('/')}
             >
-              Short Video Maker
+              Creador de Cortos
             </Typography>
-            <Button 
-              color="inherit" 
+            <Button
+              color="inherit"
               startIcon={<AddIcon />}
               onClick={() => navigate('/create')}
             >
-              Create Video
+              Crear Video
             </Button>
           </Toolbar>
         </AppBar>
         <Container component="main" sx={{ flexGrow: 1, py: 4 }}>
           {children}
         </Container>
-        <Box 
-          component="footer" 
-          sx={{ 
-            py: 3, 
-            mt: 'auto', 
+        <Box
+          component="footer"
+          sx={{
+            py: 3,
+            mt: 'auto',
             backgroundColor: (theme) => theme.palette.grey[200],
             textAlign: 'center'
           }}

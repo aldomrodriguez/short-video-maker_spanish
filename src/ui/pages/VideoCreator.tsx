@@ -35,6 +35,41 @@ interface SceneFormData {
   searchTerms: string; // Changed to string
 }
 
+const translateEnum = (val: string) => {
+  const translations: Record<string, string> = {
+    // Voces
+    'ef_dora': 'Femenina Española (Dora)',
+    'em_alex': 'Masculina Española (Alex)',
+    'em_santa': 'Masculina Festiva (Santa)',
+    // Estilos de Música
+    'sad': 'Triste',
+    'melancholic': 'Melancólica',
+    'happy': 'Feliz',
+    'euphoric/high': 'Eufórica',
+    'excited': 'Emocionante',
+    'chill': 'Relajante',
+    'uneasy': 'Inquieta',
+    'angry': 'Enojada',
+    'dark': 'Oscura',
+    'hopeful': 'Esperanzadora',
+    'contemplative': 'Contemplativa',
+    'funny/quirky': 'Divertida',
+    // Posición
+    'top': 'Arriba',
+    'center': 'Centro',
+    'bottom': 'Abajo',
+    // Orientación
+    'landscape': 'Horizontal (Apaisado)',
+    'portrait': 'Vertical (Retrato)',
+    // Volumen
+    'muted': 'Silenciado',
+    'low': 'Bajo',
+    'medium': 'Medio',
+    'high': 'Alto'
+  };
+  return translations[val] || val;
+};
+
 const VideoCreator: React.FC = () => {
   const navigate = useNavigate();
   const [scenes, setScenes] = useState<SceneFormData[]>([
@@ -69,7 +104,7 @@ const VideoCreator: React.FC = () => {
       } catch (err) {
         console.error("Failed to fetch options:", err);
         setError(
-          "Failed to load voices and music options. Please refresh the page.",
+          "Error al cargar opciones de voces y música. Por favor recarga la página.",
         );
       } finally {
         setLoadingOptions(false);
@@ -127,7 +162,7 @@ const VideoCreator: React.FC = () => {
 
       navigate(`/video/${response.data.videoId}`);
     } catch (err) {
-      setError("Failed to create video. Please try again.");
+      setError("Error al crear el video. Por favor intenta de nuevo.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -150,7 +185,7 @@ const VideoCreator: React.FC = () => {
   return (
     <Box maxWidth="md" mx="auto" py={4}>
       <Typography variant="h4" component="h1" gutterBottom>
-        Create New Video
+        Crear Nuevo Video
       </Typography>
 
       {error && (
@@ -161,7 +196,7 @@ const VideoCreator: React.FC = () => {
 
       <form onSubmit={handleSubmit}>
         <Typography variant="h5" component="h2" gutterBottom>
-          Scenes
+          Escenas
         </Typography>
 
         {scenes.map((scene, index) => (
@@ -172,7 +207,7 @@ const VideoCreator: React.FC = () => {
               alignItems="center"
               mb={2}
             >
-              <Typography variant="h6">Scene {index + 1}</Typography>
+              <Typography variant="h6">Escena {index + 1}</Typography>
               {scenes.length > 1 && (
                 <IconButton
                   onClick={() => handleRemoveScene(index)}
@@ -188,7 +223,7 @@ const VideoCreator: React.FC = () => {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Text"
+                  label="Texto a narrar"
                   multiline
                   rows={4}
                   value={scene.text}
@@ -202,12 +237,12 @@ const VideoCreator: React.FC = () => {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Search Terms (comma-separated)"
+                  label="Términos de Búsqueda (separados por comas)"
                   value={scene.searchTerms}
                   onChange={(e) =>
                     handleSceneChange(index, "searchTerms", e.target.value)
                   }
-                  helperText="Enter keywords for background video, separated by commas"
+                  helperText="Ingresa palabras clave para el video de fondo, separadas por comas"
                   required
                 />
               </Grid>
@@ -221,14 +256,14 @@ const VideoCreator: React.FC = () => {
             startIcon={<AddIcon />}
             onClick={handleAddScene}
           >
-            Add Scene
+            Agregar Escena
           </Button>
         </Box>
 
         <Divider sx={{ mb: 4 }} />
 
         <Typography variant="h5" component="h2" gutterBottom>
-          Video Configuration
+          Configuración del Video
         </Typography>
 
         <Paper sx={{ p: 3, mb: 3 }}>
@@ -237,7 +272,7 @@ const VideoCreator: React.FC = () => {
               <TextField
                 fullWidth
                 type="number"
-                label="End Screen Padding (ms)"
+                label="Pausa al final (ms)"
                 value={config.paddingBack}
                 onChange={(e) =>
                   handleConfigChange("paddingBack", parseInt(e.target.value))
@@ -247,23 +282,23 @@ const VideoCreator: React.FC = () => {
                     <InputAdornment position="end">ms</InputAdornment>
                   ),
                 }}
-                helperText="Duration to keep playing after narration ends"
+                helperText="Duración que seguirá reproduciéndose al finalizar la narración"
                 required
               />
             </Grid>
 
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
-                <InputLabel>Music Mood</InputLabel>
+                <InputLabel>Estilo de Música</InputLabel>
                 <Select
                   value={config.music}
                   onChange={(e) => handleConfigChange("music", e.target.value)}
-                  label="Music Mood"
+                  label="Estilo de Música"
                   required
                 >
                   {Object.values(MusicMoodEnum).map((tag) => (
                     <MenuItem key={tag} value={tag}>
-                      {tag}
+                      {translateEnum(tag)}
                     </MenuItem>
                   ))}
                 </Select>
@@ -272,18 +307,18 @@ const VideoCreator: React.FC = () => {
 
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
-                <InputLabel>Caption Position</InputLabel>
+                <InputLabel>Posición de Subtítulos</InputLabel>
                 <Select
                   value={config.captionPosition}
                   onChange={(e) =>
                     handleConfigChange("captionPosition", e.target.value)
                   }
-                  label="Caption Position"
+                  label="Posición de Subtítulos"
                   required
                 >
                   {Object.values(CaptionPositionEnum).map((position) => (
                     <MenuItem key={position} value={position}>
-                      {position}
+                      {translateEnum(position)}
                     </MenuItem>
                   ))}
                 </Select>
@@ -293,28 +328,28 @@ const VideoCreator: React.FC = () => {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="Caption Background Color"
+                label="Color de Fondo de los Subtítulos"
                 value={config.captionBackgroundColor}
                 onChange={(e) =>
                   handleConfigChange("captionBackgroundColor", e.target.value)
                 }
-                helperText="Any valid CSS color (name, hex, rgba)"
+                helperText="Cualquier color CSS válido (nombre, hex, rgba)"
                 required
               />
             </Grid>
 
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
-                <InputLabel>Default Voice</InputLabel>
+                <InputLabel>Voz</InputLabel>
                 <Select
                   value={config.voice}
                   onChange={(e) => handleConfigChange("voice", e.target.value)}
-                  label="Default Voice"
+                  label="Voz Principal"
                   required
                 >
                   {Object.values(VoiceEnum).map((voice) => (
                     <MenuItem key={voice} value={voice}>
-                      {voice}
+                      {translateEnum(voice)}
                     </MenuItem>
                   ))}
                 </Select>
@@ -323,18 +358,18 @@ const VideoCreator: React.FC = () => {
 
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
-                <InputLabel>Orientation</InputLabel>
+                <InputLabel>Orientación</InputLabel>
                 <Select
                   value={config.orientation}
                   onChange={(e) =>
                     handleConfigChange("orientation", e.target.value)
                   }
-                  label="Orientation"
+                  label="Orientación"
                   required
                 >
                   {Object.values(OrientationEnum).map((orientation) => (
                     <MenuItem key={orientation} value={orientation}>
-                      {orientation}
+                      {translateEnum(orientation)}
                     </MenuItem>
                   ))}
                 </Select>
@@ -343,18 +378,18 @@ const VideoCreator: React.FC = () => {
 
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
-                <InputLabel>Volume of the background audio</InputLabel>
+                <InputLabel>Volumen de audio de fondo</InputLabel>
                 <Select
                   value={config.musicVolume}
                   onChange={(e) =>
                     handleConfigChange("musicVolume", e.target.value)
                   }
-                  label="Volume of the background audio"
+                  label="Volumen de audio de fondo"
                   required
                 >
                   {Object.values(MusicVolumeEnum).map((voice) => (
                     <MenuItem key={voice} value={voice}>
-                      {voice}
+                      {translateEnum(voice)}
                     </MenuItem>
                   ))}
                 </Select>
@@ -375,7 +410,7 @@ const VideoCreator: React.FC = () => {
             {loading ? (
               <CircularProgress size={24} color="inherit" />
             ) : (
-              "Create Video"
+              "Crear Video"
             )}
           </Button>
         </Box>

@@ -6,6 +6,10 @@ import {
 } from "../../types/shorts";
 import { KOKORO_MODEL, logger } from "../../config";
 
+import { exec } from "child_process";
+import { promisify } from "util";
+const execAsync = promisify(exec);
+
 export class Kokoro {
   constructor(private tts: KokoroTTS) { }
 
@@ -16,17 +20,48 @@ export class Kokoro {
     audio: Buffer;
     audioLength: number;
   }> {
-    const splitter = new TextSplitterStream();
-    const stream = this.tts.stream(splitter, {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      voice: voice as any, // kokoro-js types only list English voices, but the model supports Spanish at runtime
-    });
-    splitter.push(text);
-    splitter.close();
-
+    const isSpanish = ["ef_dora", "em_alex", "em_santa"].includes(voice);
     const output = [];
-    for await (const audio of stream) {
-      output.push(audio);
+
+    if (isSpanish) {
+      try {
+        // kokoro-js phonemizer does not support Spanish text correctly.
+        // We use espeak-ng CLI directly to convert Spanish text to IPA phonemes.
+        const safeText = text.replace(/"/g, '\\"');
+        const { stdout } = await execAsync(
+          `espeak-ng -v es --ipa -q "${safeText}"`,
+        );
+        const ipaText = stdout.trim();
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const ttsInstance = this.tts as any;
+        const { input_ids } = ttsInstance.tokenizer(ipaText, {
+          truncation: true,
+        });
+        const audioResult = await ttsInstance.generate_from_ids(input_ids, {
+          voice,
+        });
+
+        output.push({ audio: audioResult });
+      } catch (error) {
+        logger.error(
+          { error, text, voice },
+          "Failed to generate Spanish phonemes with espeak-ng",
+        );
+        throw error;
+      }
+    } else {
+      const splitter = new TextSplitterStream();
+      const stream = this.tts.stream(splitter, {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        voice: voice as any,
+      });
+      splitter.push(text);
+      splitter.close();
+
+      for await (const audio of stream) {
+        output.push(audio);
+      }
     }
 
     const audioBuffers: ArrayBuffer[] = [];
@@ -67,6 +102,28 @@ export class Kokoro {
       dtype,
       device: "cpu", // only "cpu" is supported in node
     });
+
+    // kokoro-js npm package does not include Spanish voices (ef_dora, em_alex,
+    // em_santa) in its internal validation map (which is Object.frozen).
+    // We patch _validate_voice on the instance so it accepts Spanish voice IDs.
+    // The voice .bin files are downloaded from HuggingFace on first use,
+    // exactly like English voices — only the validation needs to be bypassed.
+    const spanishVoices: Set<string> = new Set(Object.values(VoiceEnum));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const instance = tts as any;
+    const originalValidate = instance._validate_voice.bind(instance);
+    instance._validate_voice = (voice: string) => {
+      if (spanishVoices.has(voice)) {
+        // Return the first character as the original does (language prefix)
+        return voice.at(0);
+      }
+      return originalValidate(voice);
+    };
+
+    logger.info(
+      { voices: [...spanishVoices] },
+      "Spanish voices registered in Kokoro",
+    );
 
     return new Kokoro(tts);
   }

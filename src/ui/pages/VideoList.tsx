@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  Button, 
-  CircularProgress, 
+import {
+  Box,
+  Typography,
+  Paper,
+  Button,
+  CircularProgress,
   Alert,
   List,
   ListItem,
@@ -36,7 +36,7 @@ const VideoList: React.FC = () => {
       setVideos(response.data.videos || []);
       setLoading(false);
     } catch (err) {
-      setError('Failed to fetch videos');
+      setError('Error al cargar la lista de videos');
       setLoading(false);
       console.error('Error fetching videos:', err);
     }
@@ -56,19 +56,24 @@ const VideoList: React.FC = () => {
 
   const handleDeleteVideo = async (id: string, event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    
+
     try {
       await axios.delete(`/api/short-video/${id}`);
       fetchVideos();
     } catch (err) {
-      setError('Failed to delete video');
+      setError('Error al eliminar el video');
       console.error('Error deleting video:', err);
     }
   };
 
-  const capitalizeFirstLetter = (str: string) => {
-    if (!str || typeof str !== 'string') return 'Unknown';
-    return str.charAt(0).toUpperCase() + str.slice(1);
+  const translateStatus = (str: string) => {
+    if (!str || typeof str !== 'string') return 'Desconocido';
+    const statusMap: Record<string, string> = {
+      'ready': 'Listo',
+      'processing': 'Procesando',
+      'failed': 'Fallido'
+    };
+    return statusMap[str] || (str.charAt(0).toUpperCase() + str.slice(1));
   };
 
   if (loading) {
@@ -83,34 +88,34 @@ const VideoList: React.FC = () => {
     <Box maxWidth="md" mx="auto" py={4}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
         <Typography variant="h4" component="h1">
-          Your Videos
+          Tus Videos
         </Typography>
-        <Button 
-          variant="contained" 
-          color="primary" 
+        <Button
+          variant="contained"
+          color="primary"
           startIcon={<AddIcon />}
           onClick={handleCreateNew}
         >
-          Create New Video
+          Crear Nuevo Video
         </Button>
       </Box>
-      
+
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>
       )}
-      
+
       {videos.length === 0 ? (
         <Paper sx={{ p: 4, textAlign: 'center' }}>
           <Typography variant="body1" color="text.secondary" gutterBottom>
-            You haven't created any videos yet.
+            Aún no has creado ningún video.
           </Typography>
-          <Button 
-            variant="outlined" 
+          <Button
+            variant="outlined"
             startIcon={<AddIcon />}
             onClick={handleCreateNew}
             sx={{ mt: 2 }}
           >
-            Create Your First Video
+            Crea Tu Primer Video
           </Button>
         </Paper>
       ) : (
@@ -119,14 +124,14 @@ const VideoList: React.FC = () => {
             {videos.map((video, index) => {
               const videoId = video?.id || '';
               const videoStatus = video?.status || 'unknown';
-              
+
               return (
                 <div key={videoId}>
                   {index > 0 && <Divider />}
-                  <ListItem 
-                    button 
+                  <ListItem
+                    button
                     onClick={() => handleVideoClick(videoId)}
-                    sx={{ 
+                    sx={{
                       py: 2,
                       '&:hover': {
                         backgroundColor: 'rgba(0, 0, 0, 0.04)'
@@ -140,19 +145,19 @@ const VideoList: React.FC = () => {
                           component="span"
                           variant="body2"
                           color={
-                            videoStatus === 'ready' ? 'success.main' : 
-                            videoStatus === 'processing' ? 'info.main' : 
-                            videoStatus === 'failed' ? 'error.main' : 'text.secondary'
+                            videoStatus === 'ready' ? 'success.main' :
+                              videoStatus === 'processing' ? 'info.main' :
+                                videoStatus === 'failed' ? 'error.main' : 'text.secondary'
                           }
                         >
-                          {capitalizeFirstLetter(videoStatus)}
+                          {translateStatus(videoStatus)}
                         </Typography>
                       }
                     />
                     <ListItemSecondaryAction>
                       {videoStatus === 'ready' && (
-                        <IconButton 
-                          edge="end" 
+                        <IconButton
+                          edge="end"
                           aria-label="play"
                           onClick={() => handleVideoClick(videoId)}
                           color="primary"
@@ -160,9 +165,9 @@ const VideoList: React.FC = () => {
                           <PlayArrowIcon />
                         </IconButton>
                       )}
-                      <IconButton 
-                        edge="end" 
-                        aria-label="delete" 
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
                         onClick={(e) => handleDeleteVideo(videoId, e)}
                         color="error"
                         sx={{ ml: 1 }}

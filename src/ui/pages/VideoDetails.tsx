@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  Button, 
-  CircularProgress, 
+import {
+  Box,
+  Typography,
+  Paper,
+  Button,
+  CircularProgress,
   Alert,
   Grid
 } from '@mui/material';
@@ -31,27 +31,27 @@ const VideoDetails: React.FC = () => {
       if (isMounted.current) {
         setStatus(videoStatus || 'unknown');
         console.log("videoStatus", videoStatus);
-        
+
         if (videoStatus !== 'processing') {
           console.log("video is not processing");
           console.log("interval", intervalRef.current);
-          
+
           if (intervalRef.current) {
             console.log("clearing interval");
             clearInterval(intervalRef.current);
             intervalRef.current = null;
           }
         }
-        
+
         setLoading(false);
       }
     } catch (error) {
       if (isMounted.current) {
-        setError('Failed to fetch video status');
+        setError('Error al cargar el estado del video');
         setStatus('failed');
         setLoading(false);
         console.error('Error fetching video status:', error);
-        
+
         if (intervalRef.current) {
           clearInterval(intervalRef.current);
           intervalRef.current = null;
@@ -62,11 +62,11 @@ const VideoDetails: React.FC = () => {
 
   useEffect(() => {
     checkVideoStatus();
-    
+
     intervalRef.current = setInterval(() => {
       checkVideoStatus();
     }, 5000);
-    
+
     return () => {
       isMounted.current = false;
       if (intervalRef.current) {
@@ -97,9 +97,9 @@ const VideoDetails: React.FC = () => {
       return (
         <Box textAlign="center" py={4}>
           <CircularProgress size={60} sx={{ mb: 2 }} />
-          <Typography variant="h6">Your video is being created...</Typography>
+          <Typography variant="h6">Tu video se está creando...</Typography>
           <Typography variant="body1" color="text.secondary">
-            This may take a few minutes. Please wait.
+            Esto puede tomar unos minutos. Por favor espera.
           </Typography>
         </Box>
       );
@@ -110,12 +110,12 @@ const VideoDetails: React.FC = () => {
         <Box>
           <Box mb={3} textAlign="center">
             <Typography variant="h6" color="success.main" gutterBottom>
-              Your video is ready!
+              ¡Tu video está listo!
             </Typography>
           </Box>
-          
-          <Box sx={{ 
-            position: 'relative', 
+
+          <Box sx={{
+            position: 'relative',
             paddingTop: '56.25%',
             mb: 3,
             backgroundColor: '#000'
@@ -133,18 +133,18 @@ const VideoDetails: React.FC = () => {
               src={`/api/short-video/${videoId}`}
             />
           </Box>
-          
+
           <Box textAlign="center">
-            <Button 
+            <Button
               component="a"
               href={`/api/short-video/${videoId}`}
               download
-              variant="contained" 
-              color="primary" 
+              variant="contained"
+              color="primary"
               startIcon={<DownloadIcon />}
               sx={{ textDecoration: 'none' }}
             >
-              Download Video
+              Descargar Video
             </Button>
           </Box>
         </Box>
@@ -154,35 +154,40 @@ const VideoDetails: React.FC = () => {
     if (status === 'failed') {
       return (
         <Alert severity="error" sx={{ mb: 3 }}>
-          Video processing failed. Please try again with different settings.
+          El procesamiento del video falló. Por favor intenta de nuevo con otras opciones.
         </Alert>
       );
     }
 
     return (
       <Alert severity="info" sx={{ mb: 3 }}>
-        Unknown video status. Please try refreshing the page.
+        Estado de video desconocido. Por favor intenta recargar la página.
       </Alert>
     );
   };
 
-  const capitalizeFirstLetter = (str: string) => {
-    if (!str || typeof str !== 'string') return 'Unknown';
-    return str.charAt(0).toUpperCase() + str.slice(1);
+  const translateStatus = (str: string) => {
+    if (!str || typeof str !== 'string') return 'Desconocido';
+    const statusMap: Record<string, string> = {
+      'ready': 'Listo',
+      'processing': 'Procesando',
+      'failed': 'Fallido'
+    };
+    return statusMap[str] || (str.charAt(0).toUpperCase() + str.slice(1));
   };
 
   return (
     <Box maxWidth="md" mx="auto" py={4}>
       <Box display="flex" alignItems="center" mb={3}>
-        <Button 
-          startIcon={<ArrowBackIcon />} 
+        <Button
+          startIcon={<ArrowBackIcon />}
           onClick={handleBack}
           sx={{ mr: 2 }}
         >
-          Back to videos
+          Volver a videos
         </Button>
         <Typography variant="h4" component="h1">
-          Video Details
+          Detalles del Video
         </Typography>
       </Box>
 
@@ -190,29 +195,29 @@ const VideoDetails: React.FC = () => {
         <Grid container spacing={2} mb={3}>
           <Grid item xs={12} sm={6}>
             <Typography variant="body2" color="text.secondary">
-              Video ID
+              ID del Video
             </Typography>
             <Typography variant="body1">
-              {videoId || 'Unknown'}
+              {videoId || 'Desconocido'}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={6}>
             <Typography variant="body2" color="text.secondary">
-              Status
+              Estado
             </Typography>
-            <Typography 
-              variant="body1" 
+            <Typography
+              variant="body1"
               color={
-                status === 'ready' ? 'success.main' : 
-                status === 'processing' ? 'info.main' : 
-                status === 'failed' ? 'error.main' : 'text.primary'
+                status === 'ready' ? 'success.main' :
+                  status === 'processing' ? 'info.main' :
+                    status === 'failed' ? 'error.main' : 'text.primary'
               }
             >
-              {capitalizeFirstLetter(status)}
+              {translateStatus(status)}
             </Typography>
           </Grid>
         </Grid>
-        
+
         {renderContent()}
       </Paper>
     </Box>

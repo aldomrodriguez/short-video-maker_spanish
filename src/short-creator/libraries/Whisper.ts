@@ -12,7 +12,7 @@ import { logger } from "../../logger";
 export const ErrorWhisper = new Error("There was an error with WhisperCpp");
 
 export class Whisper {
-  constructor(private config: Config) {}
+  constructor(private config: Config) { }
 
   static async init(config: Config): Promise<Whisper> {
     if (!config.runningInDocker) {
@@ -53,6 +53,7 @@ export class Whisper {
       whisperCppVersion: this.config.whisperVersion,
       inputPath: audioPath,
       tokenLevelTimestamps: true,
+      language: "es",
       printOutput: this.config.whisperVerbose,
       onProgress: (progress) => {
         logger.debug({ audioPath }, `Transcribing is ${progress} complete`);
