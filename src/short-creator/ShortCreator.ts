@@ -38,7 +38,7 @@ export class ShortCreator {
     private ffmpeg: FFMpeg,
     private pexelsApi: PexelsAPI,
     private musicManager: MusicManager,
-  ) {}
+  ) { }
 
   public status(id: string): VideoStatus {
     const videoPath = this.getVideoPath(id);
@@ -110,7 +110,7 @@ export class ShortCreator {
     for (const scene of inputScenes) {
       const audio = await this.kokoro.generate(
         scene.text,
-        config.voice ?? "af_heart",
+        config.voice ?? "ef_dora",
       );
       let { audioLength } = audio;
       const { audio: audioStream } = audio;
@@ -166,7 +166,7 @@ export class ShortCreator {
             });
           })
           .on("error", (err: Error) => {
-            fs.unlink(tempVideoPath, () => {}); // Delete the file if download failed
+            fs.unlink(tempVideoPath, () => { }); // Delete the file if download failed
             logger.error(err, "Error downloading video:");
             reject(err);
           });

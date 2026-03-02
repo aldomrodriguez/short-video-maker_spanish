@@ -10,9 +10,13 @@
     "outDir": "dist",
     "rootDir": "src",
     "declaration": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "types": [
+      "node"
+    ]
   },
   "exclude": [
+    "vite.config.ts",
     "remotion.config.ts",
     "node_modules",
     "dist",

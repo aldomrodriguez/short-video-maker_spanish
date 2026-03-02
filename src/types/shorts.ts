@@ -41,34 +41,10 @@ export const sceneInput = z.object({
 export type SceneInput = z.infer<typeof sceneInput>;
 
 export enum VoiceEnum {
-  af_heart = "af_heart",
-  af_alloy = "af_alloy",
-  af_aoede = "af_aoede",
-  af_bella = "af_bella",
-  af_jessica = "af_jessica",
-  af_kore = "af_kore",
-  af_nicole = "af_nicole",
-  af_nova = "af_nova",
-  af_river = "af_river",
-  af_sarah = "af_sarah",
-  af_sky = "af_sky",
-  am_adam = "am_adam",
-  am_echo = "am_echo",
-  am_eric = "am_eric",
-  am_fenrir = "am_fenrir",
-  am_liam = "am_liam",
-  am_michael = "am_michael",
-  am_onyx = "am_onyx",
-  am_puck = "am_puck",
-  am_santa = "am_santa",
-  bf_emma = "bf_emma",
-  bf_isabella = "bf_isabella",
-  bm_george = "bm_george",
-  bm_lewis = "bm_lewis",
-  bf_alice = "bf_alice",
-  bf_lily = "bf_lily",
-  bm_daniel = "bm_daniel",
-  bm_fable = "bm_fable",
+  // Voces en español (Latin American)
+  ef_dora = "ef_dora",   // femenina
+  em_alex = "em_alex",   // masculina
+  em_santa = "em_santa", // masculina (festiva)
 }
 
 export enum OrientationEnum {
@@ -107,7 +83,7 @@ export const renderConfig = z.object({
   voice: z
     .nativeEnum(VoiceEnum)
     .optional()
-    .describe("Voice to be used for the speech, default is af_heart"),
+    .describe("Voice to be used for the speech, default is ef_dora (Spanish female)"),
   orientation: z
     .nativeEnum(OrientationEnum)
     .optional()

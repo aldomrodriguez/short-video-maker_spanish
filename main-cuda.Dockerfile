@@ -16,7 +16,7 @@ RUN git clone https://github.com/ggerganov/whisper.cpp.git -b v1.7.1 --depth 1 .
 RUN make clean
 RUN GGML_CUDA=1 make -j
 
-RUN sh ./models/download-ggml-model.sh medium.en
+RUN sh ./models/download-ggml-model.sh medium
 
 FROM ${BASE_CUDA_RUN_CONTAINER} AS base
 
@@ -37,29 +37,30 @@ ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
 RUN apt update
 RUN apt install -y \
-      # whisper dependencies
-      git \
-      wget \
-      cmake \
-      ffmpeg \
-      curl \
-      build-essential \
-      make \
-      # remotion dependencies
-      libnss3 \
-      libdbus-1-3 \
-      libatk1.0-0 \
-      libgbm-dev \
-      libasound2 \
-      libxrandr2 \
-      libxkbcommon-dev \
-      libxfixes3 \
-      libxcomposite1 \
-      libxdamage1 \
-      libatk-bridge2.0-0 \
-      libpango-1.0-0 \
-      libcairo2 \
-      libcups2 \
+    # whisper dependencies
+    git \
+    wget \
+    cmake \
+    ffmpeg \
+    curl \
+    build-essential \
+    make \
+    espeak-ng \
+    # remotion dependencies
+    libnss3 \
+    libdbus-1-3 \
+    libatk1.0-0 \
+    libgbm-dev \
+    libasound2 \
+    libxrandr2 \
+    libxkbcommon-dev \
+    libxfixes3 \
+    libxcomposite1 \
+    libxdamage1 \
+    libatk-bridge2.0-0 \
+    libpango-1.0-0 \
+    libcairo2 \
+    libcups2 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 # setup pnpm
@@ -91,6 +92,7 @@ COPY package.json /app/
 # app configuration via environment variables
 ENV DATA_DIR_PATH=/app/data
 ENV DOCKER=true
+ENV WHISPER_MODEL=medium
 # number of chrome tabs to use for rendering
 ENV CONCURRENCY=1
 # video cache - 2000MB

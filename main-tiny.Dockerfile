@@ -14,36 +14,37 @@ RUN git clone https://github.com/ggml-org/whisper.cpp.git .
 RUN git checkout v1.7.1
 RUN make
 WORKDIR /whisper/models
-RUN sh ./download-ggml-model.sh tiny.en
+RUN sh ./download-ggml-model.sh tiny
 
 FROM node:22-bookworm-slim AS base
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
 RUN apt update
 RUN apt install -y \
-      # whisper dependencies
-      git \
-      wget \
-      cmake \
-      ffmpeg \
-      curl \
-      make \
-      libsdl2-dev \
-      # remotion dependencies
-      libnss3 \
-      libdbus-1-3 \
-      libatk1.0-0 \
-      libgbm-dev \
-      libasound2 \
-      libxrandr2 \
-      libxkbcommon-dev \
-      libxfixes3 \
-      libxcomposite1 \
-      libxdamage1 \
-      libatk-bridge2.0-0 \
-      libpango-1.0-0 \
-      libcairo2 \
-      libcups2 \
+    # whisper dependencies
+    git \
+    wget \
+    cmake \
+    ffmpeg \
+    curl \
+    make \
+    libsdl2-dev \
+    espeak-ng \
+    # remotion dependencies
+    libnss3 \
+    libdbus-1-3 \
+    libatk1.0-0 \
+    libgbm-dev \
+    libasound2 \
+    libxrandr2 \
+    libxkbcommon-dev \
+    libxfixes3 \
+    libxcomposite1 \
+    libxdamage1 \
+    libatk-bridge2.0-0 \
+    libpango-1.0-0 \
+    libcairo2 \
+    libcups2 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 # setup pnpm
@@ -75,7 +76,7 @@ COPY package.json /app/
 # app configuration via environment variables
 ENV DATA_DIR_PATH=/app/data
 ENV DOCKER=true
-ENV WHISPER_MODEL=tiny.en
+ENV WHISPER_MODEL=tiny
 ENV KOKORO_MODEL_PRECISION=q4
 # number of chrome tabs to use for rendering
 ENV CONCURRENCY=1

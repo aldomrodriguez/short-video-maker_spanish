@@ -7,18 +7,19 @@ import {
 import { KOKORO_MODEL, logger } from "../../config";
 
 export class Kokoro {
-  constructor(private tts: KokoroTTS) {}
+  constructor(private tts: KokoroTTS) { }
 
   async generate(
     text: string,
     voice: Voices,
   ): Promise<{
-    audio: ArrayBuffer;
+    audio: Buffer;
     audioLength: number;
   }> {
     const splitter = new TextSplitterStream();
     const stream = this.tts.stream(splitter, {
-      voice,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      voice: voice as any, // kokoro-js types only list English voices, but the model supports Spanish at runtime
     });
     splitter.push(text);
     splitter.close();
@@ -44,13 +45,13 @@ export class Kokoro {
     };
   }
 
-  static concatWavBuffers(buffers: ArrayBuffer[]): ArrayBuffer {
-    const header = Buffer.from(buffers[0].slice(0, 44));
+  static concatWavBuffers(buffers: ArrayBuffer[]): Buffer {
+    const first = Buffer.from(buffers[0]);
+    const header = Buffer.from(first.subarray(0, 44));
     let totalDataLength = 0;
 
     const dataParts = buffers.map((buf) => {
-      const b = Buffer.from(buf);
-      const data = b.slice(44);
+      const data = Buffer.from(buf).subarray(44);
       totalDataLength += data.length;
       return data;
     });

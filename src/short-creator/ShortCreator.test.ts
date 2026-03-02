@@ -34,7 +34,7 @@ vi.mock("fs-extra", async () => {
     ensureDirSync: vi.fn((path) => {
       try {
         memfs.mkdirSync(path, { recursive: true });
-      } catch (error) {}
+      } catch (error) { }
     }),
     removeSync: vi.fn((path) => {
       try {
@@ -45,7 +45,7 @@ vi.mock("fs-extra", async () => {
         } else {
           memfs.unlinkSync(path);
         }
-      } catch (error) {}
+      } catch (error) { }
     }),
     createWriteStream: vi.fn(() => ({
       on: vi.fn(),
@@ -80,7 +80,8 @@ vi.mock("fluent-ffmpeg", () => {
     pipe: mockPipe,
   }));
 
-  ffmpegMock.setFfmpegPath = vi.fn();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (ffmpegMock as any).setFfmpegPath = vi.fn();
 
   return { default: ffmpegMock };
 });
@@ -161,7 +162,8 @@ test("test me", async () => {
   const remotion = await Remotion.init(config);
 
   // control the render promise resolution
-  let resolveRenderPromise: () => void;
+  // eslint-disable-next-line prefer-const
+  let resolveRenderPromise: () => void = () => { };
   const renderPromiseMock: Promise<void> = new Promise((resolve) => {
     resolveRenderPromise = resolve;
   });

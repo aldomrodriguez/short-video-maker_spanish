@@ -7,8 +7,8 @@ Content-Type: application/json
 {
     "scenes": [
       {
-        "text": "hello world",
-        "searchTerms": ["rain"]
+        "text": "hola mundo",
+        "searchTerms": ["lluvia"]
       }
     ],
     "config": {
@@ -16,7 +16,7 @@ Content-Type: application/json
       "music": "uneasy",
       "captionPosition": "center",
       "captionBackgroundColor": "#ff0000",
-      "voice": "bm_lewis",
+      "voice": "ef_dora",
       "orientation": "landscape",
       "musicVolume": "muted"
     }

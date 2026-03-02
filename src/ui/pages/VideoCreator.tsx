@@ -45,7 +45,7 @@ const VideoCreator: React.FC = () => {
     music: MusicMoodEnum.chill,
     captionPosition: CaptionPositionEnum.bottom,
     captionBackgroundColor: "blue",
-    voice: VoiceEnum.af_heart,
+    voice: VoiceEnum.ef_dora,
     orientation: OrientationEnum.portrait,
     musicVolume: MusicVolumeEnum.high,
   });
