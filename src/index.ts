@@ -61,8 +61,8 @@ async function main() {
         "testing if the installation was successful - this may take a while...",
       );
       try {
-        const audioBuffer = (await kokoro.generate("hola", "ef_dora")).audio;
-        await ffmpeg.createMp3DataUri(audioBuffer);
+        const audioBuffer = (await kokoro.generate("hola", "em_alex")).audio;
+        await ffmpeg.createMp3DataUri(audioBuffer as unknown as ArrayBuffer);
         await pexelsApi.findVideo(["dog"], 2.4);
         const testVideoPath = path.join(config.tempDirPath, "test.mp4");
         await remotion.testRender(testVideoPath);

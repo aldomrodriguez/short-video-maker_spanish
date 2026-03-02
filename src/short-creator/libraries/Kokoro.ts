@@ -27,11 +27,33 @@ export class Kokoro {
       try {
         // kokoro-js phonemizer does not support Spanish text correctly.
         // We use espeak-ng CLI directly to convert Spanish text to IPA phonemes.
-        const safeText = text.replace(/"/g, '\\"');
-        const { stdout } = await execAsync(
-          `espeak-ng -v es --ipa -q "${safeText}"`,
-        );
-        const ipaText = stdout.trim();
+        // Preserve punctuation for Kokoro pacing by splitting text into chunks
+        const tokens = text.match(/[^.,!?¿¡;:\n]+|[.,!?¿¡;:\n]+/g) || [];
+        let ipaText = "";
+
+        for (const token of tokens) {
+          if (/^[.,!?¿¡;:\n]+$/.test(token)) {
+            ipaText += token;
+          } else if (token.trim() === "") {
+            ipaText += token;
+          } else {
+            const safeText = token.replace(/"/g, '\\"').trim();
+            if (safeText) {
+              const { stdout } = await execAsync(
+                `espeak-ng -v es --ipa -q "${safeText}"`
+              );
+              // espeak-ng returns words separated by newlines, we replace them with spaces
+              const phonemized = stdout.trim().replace(/\n/g, ' ');
+              const leadingSpace = token.match(/^\s*/)?.[0] || '';
+              const trailingSpace = token.match(/\s*$/)?.[0] || '';
+              ipaText += leadingSpace + phonemized + trailingSpace;
+            } else {
+              ipaText += token;
+            }
+          }
+        }
+
+        ipaText = ipaText.replace(/\s+/g, ' ').trim();
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const ttsInstance = this.tts as any;

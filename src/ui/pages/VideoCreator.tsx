@@ -80,7 +80,7 @@ const VideoCreator: React.FC = () => {
     music: MusicMoodEnum.chill,
     captionPosition: CaptionPositionEnum.bottom,
     captionBackgroundColor: "blue",
-    voice: VoiceEnum.ef_dora,
+    voice: VoiceEnum.em_alex,
     orientation: OrientationEnum.portrait,
     musicVolume: MusicVolumeEnum.high,
   });

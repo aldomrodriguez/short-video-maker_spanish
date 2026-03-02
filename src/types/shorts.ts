@@ -83,7 +83,7 @@ export const renderConfig = z.object({
   voice: z
     .nativeEnum(VoiceEnum)
     .optional()
-    .describe("Voice to be used for the speech, default is ef_dora (Spanish female)"),
+    .describe("Voice to be used for the speech, default is em_alex (Spanish male)"),
   orientation: z
     .nativeEnum(OrientationEnum)
     .optional()

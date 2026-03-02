@@ -12,7 +12,7 @@ export class FFMpeg {
   }
 
   async saveNormalizedAudio(
-    audio: ArrayBuffer,
+    audio: ArrayBufferLike,
     outputPath: string,
   ): Promise<string> {
     logger.debug("Normalizing audio for Whisper");
@@ -39,7 +39,7 @@ export class FFMpeg {
     });
   }
 
-  async createMp3DataUri(audio: ArrayBuffer): Promise<string> {
+  async createMp3DataUri(audio: ArrayBufferLike): Promise<string> {
     const inputStream = new Readable();
     inputStream.push(Buffer.from(audio));
     inputStream.push(null);

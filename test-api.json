@@ -1,0 +1,11 @@
+{
+  "scenes": [
+    {
+      "text": "Los gatos son increíbles. Tienen sentidos muy agudos.",
+      "searchTerms": ["cats", "feline"]
+    }
+  ],
+  "config": {
+    "music": "dark"
+  }
+}

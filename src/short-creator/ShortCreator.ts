@@ -110,7 +110,7 @@ export class ShortCreator {
     for (const scene of inputScenes) {
       const audio = await this.kokoro.generate(
         scene.text,
-        config.voice ?? "ef_dora",
+        config.voice ?? "em_alex",
       );
       let { audioLength } = audio;
       const { audio: audioStream } = audio;
