@@ -67,8 +67,8 @@ El servidor expone tanto una API REST como un servidor [MCP](https://github.com/
 
 | ID | Género | Descripción |
 |---|---|---|
-| `ef_dora` | Femenino | Voz femenina en español (por defecto) |
-| `em_alex` | Masculino | Voz masculina en español |
+| `em_alex` | Masculino | Voz masculina en español (por defecto) |
+| `ef_dora` | Femenino | Voz femenina en español |
 | `em_santa` | Masculino | Voz masculina alternativa en español |
 
 ---
@@ -98,62 +98,40 @@ Cada video se compone de varias **escenas**. Cada escena tiene:
 
 ### 🐳 Docker (recomendado)
 
-Hay tres imágenes Docker según el caso de uso.
+Te recomendamos crear un archivo `.env` en la raíz de tu proyecto para gestionar de forma segura tu configuración local.
 
-#### Versión Tiny (recursos limitados)
-
-- Modelo Whisper: `tiny` (multilingüe)
-- Modelo Kokoro: `q4` (cuantizado)
-- Recomendado para servidores con poca RAM
-
-```bash
-docker run -it --rm --name short-video-maker \
-  -p 3123:3123 \
-  -e LOG_LEVEL=debug \
-  -e PEXELS_API_KEY=TU_API_KEY \
-  gyoridavid/short-video-maker:latest-tiny
+**Ejemplo de archivo `.env`**
+```env
+PORT=3123
+PEXELS_API_KEY=tu_api_key_aqui
+WHISPER_MODEL=medium
+LOG_LEVEL=debug
 ```
 
-#### Versión Normal
+#### Ejecución rápida con Docker Run
 
-- Modelo Whisper: `medium` (multilingüe)
-- Modelo Kokoro: `fp32`
-
-```bash
-docker run -it --rm --name short-video-maker \
-  -p 3123:3123 \
-  -e LOG_LEVEL=debug \
-  -e PEXELS_API_KEY=TU_API_KEY \
-  gyoridavid/short-video-maker:latest
-```
-
-#### Versión CUDA (GPU Nvidia)
-
-- Modelo Whisper: `medium` con aceleración GPU
-- Modelo Kokoro: `fp32`
+Si prefieres correr el servidor usando tu imagen ya compilada en Docker Hub y leyendo tus envs locales:
 
 ```bash
-docker run -it --rm --name short-video-maker \
+docker run -d --name short-video-maker \
   -p 3123:3123 \
-  -e LOG_LEVEL=debug \
-  -e PEXELS_API_KEY=TU_API_KEY \
-  --gpus=all \
-  gyoridavid/short-video-maker:latest-cuda
+  --env-file .env \
+  aldomrodriguez/short-video-maker_spanish:latest
 ```
 
 ### 🐙 Docker Compose
+
+Si prefieres usar la orquestación, este es el formato recomendado para levantar directamente tu imagen compilada de Docker Hub usando el archivo `.env`:
 
 ```yaml
 version: "3"
 
 services:
   short-video-maker:
-    build:
-      context: .
-      dockerfile: main.Dockerfile
-    environment:
-      - LOG_LEVEL=debug
-      - PEXELS_API_KEY=TU_API_KEY
+    image: aldomrodriguez/short-video-maker_spanish:latest
+    container_name: short-video-maker
+    env_file:
+      - .env
     ports:
       - "3123:3123"
     volumes:
@@ -238,7 +216,7 @@ El servidor incluye una interfaz web accesible desde el navegador en:
 | `music` | Estado de ánimo de la música de fondo. Ver `GET /api/music-tags` | aleatorio |
 | `captionPosition` | Posición de los subtítulos: `top`, `center`, `bottom` | `bottom` |
 | `captionBackgroundColor` | Color de fondo del subtítulo activo | `blue` |
-| `voice` | Voz Kokoro a usar | `ef_dora` |
+| `voice` | Voz Kokoro a usar | `em_alex` |
 | `orientation` | Orientación del video: `portrait` o `landscape` | `portrait` |
 | `musicVolume` | Volumen de la música: `low`, `medium`, `high`, `muted` | `high` |
 
@@ -268,7 +246,7 @@ curl -X POST localhost:3123/api/short-video \
     "config": {
       "paddingBack": 1500,
       "music": "chill",
-      "voice": "ef_dora"
+      "voice": "em_alex"
     }
   }'
 # {"videoId":"cma9sjly700020jo25vwzfnv9"}
