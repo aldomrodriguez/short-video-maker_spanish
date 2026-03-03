@@ -35,8 +35,8 @@ export const PortraitVideo: React.FC<z.infer<typeof shortVideoSchema>> = ({
     borderRadius: "10px",
   };
 
-  const captionPosition = config.captionPosition ?? "center";
-  let captionStyle = {};
+  const captionPosition = config.captionPosition ?? "bottom";
+  let captionStyle: React.CSSProperties = {};
   if (captionPosition === "top") {
     captionStyle = { top: 100 };
   }
@@ -44,7 +44,7 @@ export const PortraitVideo: React.FC<z.infer<typeof shortVideoSchema>> = ({
     captionStyle = { top: "50%", transform: "translateY(-50%)" };
   }
   if (captionPosition === "bottom") {
-    captionStyle = { bottom: 100 };
+    captionStyle = { bottom: 200 };
   }
 
   const [musicVolume, musicMuted] = calculateVolume(config.musicVolume);
@@ -111,7 +111,7 @@ export const PortraitVideo: React.FC<z.infer<typeof shortVideoSchema>> = ({
                       return (
                         <p
                           style={{
-                            fontSize: "6em",
+                            fontSize: "4.5em",
                             fontFamily: fontFamily,
                             fontWeight: "black",
                             color: "white",
@@ -128,7 +128,7 @@ export const PortraitVideo: React.FC<z.infer<typeof shortVideoSchema>> = ({
                           {line.texts.map((text, l) => {
                             const active =
                               frame >=
-                                startFrame + (text.startMs / 1000) * fps &&
+                              startFrame + (text.startMs / 1000) * fps &&
                               frame <= startFrame + (text.endMs / 1000) * fps;
                             return (
                               <>
